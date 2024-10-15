@@ -1,3 +1,3 @@
-import { level } from './level';
+import { boomberman } from './boomberman';
 
-export const scenes = [level];
+export const scenes = [boomberman];
