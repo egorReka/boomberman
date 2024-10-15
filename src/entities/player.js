@@ -2,6 +2,7 @@ import { Entity } from './entity';
 
 export class Player extends Entity {
   textureKey;
+  _moveSpeed;
 
   constructor(scene, x, y, texture) {
     super(scene, x, y, texture, 'player');
@@ -9,6 +10,9 @@ export class Player extends Entity {
     const anims = this.scene.anims;
     const animsFrameReate = 9;
     this.textureKey = texture;
+    this._moveSpeed = 4;
+    this.setSize(10, 10);
+    this.setOffset(3, 4);
 
     anims.create({
       key: 'down',
@@ -49,6 +53,16 @@ export class Player extends Entity {
       frameRate: animsFrameReate,
       repeat: -1,
     });
+
+    anims.create({
+      key: 'dead',
+      frames: anims.generateFrameNumbers(this.textureKey, {
+        start: 12,
+        end: 18,
+      }),
+      frameRate: animsFrameReate,
+      repeat: 1,
+    });
   }
 
   update(delta) {
@@ -56,17 +70,18 @@ export class Player extends Entity {
 
     if (keys.up.isDown) {
       this.anims.play('up', true);
-      this.setPosition(this.x, this.y - delta * 0.1);
+      this.setVelocity(0, -delta * this._moveSpeed);
     } else if (keys.down.isDown) {
       this.anims.play('down', true);
-      this.setPosition(this.x, this.y + delta * 0.1);
+      this.setVelocity(0, delta * this._moveSpeed);
     } else if (keys.left.isDown) {
       this.anims.play('left', true);
-      this.setPosition(this.x - delta * 0.1, this.y);
+      this.setVelocity(-delta * this._moveSpeed, 0);
     } else if (keys.right.isDown) {
       this.anims.play('right', true);
-      this.setPosition(this.x + delta * 0.1, this.y);
+      this.setVelocity(delta * this._moveSpeed, 0);
     } else { 
+      this.setVelocity(0, 0);
       this.stop();
     }
   }

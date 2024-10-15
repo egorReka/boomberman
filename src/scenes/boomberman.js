@@ -27,6 +27,19 @@ export class boomberman extends Phaser.Scene {
     const wallsLayer = map.createLayer('walls', tileset, 0, 0);
 
     this.player = new Player(this, 24, 56, 'player');
+
+    // слежение по камере за игроком
+    this.cameras.main.startFollow(this.player);
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+    // границы игрового мира
+    this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    this.player.setCollideWorldBounds(true);
+
+    // коллизия игрока с стенами
+    this.physics.add.collider(this.player, wallsLayer);
+    wallsLayer.setCollisionByExclusion([-1]);
+    
   }
 
   update(time, delta) {
