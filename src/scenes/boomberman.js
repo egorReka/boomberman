@@ -1,8 +1,9 @@
-// import boombermanJSON from '../assets/boomberman.json';
+import { Enemy } from '../entities/enemy';
 import { Player } from '../entities/player';
 
 export class boomberman extends Phaser.Scene {
   player;
+  enemy;
 
   constructor() { 
     super('boombermanScene');
@@ -16,6 +17,12 @@ export class boomberman extends Phaser.Scene {
         frameWidth: 16,
         frameHeight: 16
       });
+    
+    this.load.spritesheet('valcom', 'src/assets/characters/enemy/valcom.png',
+      {
+        frameWidth: 16,
+        frameHeight: 16
+      });
   }
 
   create() {
@@ -25,8 +32,10 @@ export class boomberman extends Phaser.Scene {
     
     const gorundLayer = map.createLayer('ground', tileset, 0, 0);
     const wallsLayer = map.createLayer('walls', tileset, 0, 0);
+    const boxesLayer = map.createLayer('boxes', tileset, 0, 0);
 
     this.player = new Player(this, 24, 56, 'player');
+    this.enemy = new Enemy(this, 440, 55, 'valcom');
 
     // слежение по камере за игроком
     this.cameras.main.startFollow(this.player);
@@ -35,15 +44,39 @@ export class boomberman extends Phaser.Scene {
     // границы игрового мира
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.player.setCollideWorldBounds(true);
+    this.enemy.setCollideWorldBounds(true);
 
-    // коллизия игрока с стенами
+    // коллизия игрока со стенами
     this.physics.add.collider(this.player, wallsLayer);
     wallsLayer.setCollisionByExclusion([-1]);
-    
+
+    this.physics.add.collider(this.player, boxesLayer);
+    boxesLayer.setCollisionByExclusion([-1]);
+
+    // коллизия врага со стенами
+    this.physics.add.collider(this.enemy, wallsLayer, this.handleEnemyCollision, null, this);
+    wallsLayer.setCollisionByExclusion([-1]);
+
+    this.physics.add.collider(this.enemy, boxesLayer, this.handleEnemyCollision, null, this);
+    boxesLayer.setCollisionByExclusion([-1]);
+
+    this.physics.add.overlap(this.enemy, this.player, this.handlePlayerEnemyCollision, null, this);
   }
 
-  update(time, delta) {
+  handleEnemyCollision() {
+    this.enemy.changeDirection();
+  }
+
+  handlePlayerEnemyCollision() {
+    if (!this.player.getData("isDead")) {
+      this.player.setData("isDead", true);
+      this.player.anims.play('dead', true);
+      this.player.setVelocity(0, 0);
+    }
+  }
+
+  update(time, delta) {    
     this.player.update(delta);
+    this.enemy.update(delta);
   }
 }
-

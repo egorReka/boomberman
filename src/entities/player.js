@@ -8,11 +8,13 @@ export class Player extends Entity {
     super(scene, x, y, texture, 'player');
 
     const anims = this.scene.anims;
-    const animsFrameReate = 9;
+    const animsFrameReate = 6;
     this.textureKey = texture;
-    this._moveSpeed = 4;
+    this._moveSpeed = 2;
     this.setSize(10, 10);
     this.setOffset(3, 4);
+    this.setDepth(1);
+    this.setData("isDead", false);
 
     anims.create({
       key: 'down',
@@ -58,15 +60,27 @@ export class Player extends Entity {
       key: 'dead',
       frames: anims.generateFrameNumbers(this.textureKey, {
         start: 12,
-        end: 18,
+        end: 20,
       }),
       frameRate: animsFrameReate,
-      repeat: 1,
+      repeat: 0,
+    });
+
+    this.on('animationcomplete', (animation) => {
+      if (animation.key === 'dead') {
+        this.setData("isDead", true);
+        this.setVelocity(0, 0);
+        this.visible = false;
+      }
     });
   }
 
-  update(delta) {
-    const keys = this.scene.input.keyboard.createCursorKeys();
+  update(delta) {   
+    if (this.getData("isDead")) {
+      return;
+    }
+
+    const keys = this.scene?.input.keyboard.createCursorKeys();
 
     if (keys.up.isDown) {
       this.anims.play('up', true);
