@@ -1,20 +1,23 @@
 import { Entity } from './entity';
+import { Bomb } from './bomb';
 
 export class Player extends Entity {
   textureKey;
   _moveSpeed;
 
-  constructor(scene, x, y, texture) {
+  constructor(scene, x, y, texture, map) {
     super(scene, x, y, texture, 'player');
 
     const anims = this.scene.anims;
     const animsFrameReate = 6;
     this.textureKey = texture;
     this._moveSpeed = 2;
-    this.setSize(10, 10);
-    this.setOffset(3, 4);
+    this.setSize(12, 12);
+    this.setOffset(2, 2);
     this.setDepth(1);
     this.setData("isDead", false);
+    this.map = map;
+    this.setupKeysListener();
 
     anims.create({
       key: 'down',
@@ -73,6 +76,27 @@ export class Player extends Entity {
         this.visible = false;
       }
     });
+  }
+
+  setupKeysListener() {
+    this.scene.input.keyboard.on('keydown-SPACE', () => {
+      if (!this.scene.bomb) { 
+        // Преобразуем мировые координаты игрока (this.x, this.y) в тайловые
+        const tileX = this.map.worldToTileX(this.x);
+        const tileY = this.map.worldToTileY(this.y);
+  
+        // Преобразуем тайловые координаты обратно в мировые для центрирования бомбы
+        const worldX = this.map.tileToWorldX(tileX) + this.map.tileWidth / 2;
+        const worldY = this.map.tileToWorldY(tileY) + this.map.tileHeight / 2;
+  
+        this.createBomb(worldX, worldY);
+      }
+    });
+  }
+
+  createBomb(x, y) {
+    this.scene.bomb = new Bomb(this.scene, x, y, 'bomb');
+    this.scene.physics.add.existing(this.scene.bomb);
   }
 
   update(delta) {   

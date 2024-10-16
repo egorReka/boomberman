@@ -31,6 +31,7 @@
         "boomberman.json"
     ],
     "project": "boomberman.tiled-project",
+    "property.type": "object",
     "recentFiles": [
         "boomberman.json"
     ],

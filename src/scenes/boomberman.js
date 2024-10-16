@@ -1,14 +1,16 @@
 import { Enemy } from '../entities/enemy';
 import { Player } from '../entities/player';
+import { Bomb } from '../entities/bomb';
 
 export class boomberman extends Phaser.Scene {
   player;
   enemy;
+  bomb;
 
   constructor() { 
     super('boombermanScene');
   }
-
+  
   preload() {
     this.load.image('boomberman', 'src/assets/boomberman.png');
     this.load.tilemapTiledJSON('map', 'src/assets/boomberman.json');
@@ -23,6 +25,12 @@ export class boomberman extends Phaser.Scene {
         frameWidth: 16,
         frameHeight: 16
       });
+    
+    this.load.spritesheet('bomb', 'src/assets/characters/bomb.png',
+      {
+        frameWidth: 16,
+        frameHeight: 16
+      });  
   }
 
   create() {
@@ -33,8 +41,9 @@ export class boomberman extends Phaser.Scene {
     const gorundLayer = map.createLayer('ground', tileset, 0, 0);
     const wallsLayer = map.createLayer('walls', tileset, 0, 0);
     const boxesLayer = map.createLayer('boxes', tileset, 0, 0);
+    const bombLayer = map.createLayer('bomb', tileset, 0, 0);
 
-    this.player = new Player(this, 24, 56, 'player');
+    this.player = new Player(this, 24, 56, 'player', map);
     this.enemy = new Enemy(this, 440, 55, 'valcom');
 
     // слежение по камере за игроком
@@ -78,5 +87,9 @@ export class boomberman extends Phaser.Scene {
   update(time, delta) {    
     this.player.update(delta);
     this.enemy.update(delta);
+
+    if (this.bomb) {
+      this.bomb.update();
+    }
   }
 }
