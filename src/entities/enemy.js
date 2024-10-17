@@ -16,39 +16,31 @@ export class Enemy extends Entity {
     this.setSize(15, 15);
     this.setOffset(1, 1);    
 
-    anims.create({
-      key: 'enemy-up-down',
-      frames: anims.generateFrameNumbers(this.textureKey, {
-        start: 0,
-        end: 5,
-      }),
-      frameRate: animsFrameReate,
-      repeat: -1,
-    });
+  this.anims.create({
+    key: 'enemy-up-down',
+    frames: this.anims.generateFrameNumbers('valcom', { start: 0, end: 5 }),
+    frameRate: animsFrameReate,
+    repeat: -1,
+  });
 
-    anims.create({
-      key: 'enemy-right',
-      frames: anims.generateFrameNumbers(this.textureKey, {
-        start: 0,
-        end: 2,
-      }),
-      frameRate: animsFrameReate,
-      repeat: -1,
-    });
+  this.anims.create({
+    key: 'enemy-right',
+    frames: this.anims.generateFrameNumbers('valcom', { start: 0, end: 2 }),
+    frameRate: animsFrameReate,
+    repeat: -1,
+  });
 
-    anims.create({
-      key: 'enemy-left',
-      frames: anims.generateFrameNumbers(this.textureKey, {
-        start: 3,
-        end: 5,
-      }),
-      frameRate: animsFrameReate,
-      repeat: -1,
-    });
+  this.anims.create({
+    key: 'enemy-left',
+    frames: this.anims.generateFrameNumbers('valcom', { start: 3, end: 5 }),
+    frameRate: animsFrameReate,
+    repeat: -1,
+  });
   }
 
   getRandomDirection() {
     const rand = Math.floor(Math.random() * 4);
+
     switch (rand) {
       case 0: return 'up';
       case 1: return 'down';
@@ -65,7 +57,7 @@ export class Enemy extends Entity {
     switch (this.direction) {
       case 'up':
         this.anims.play('enemy-up-down', true);
-        this.setVelocity(-0, delta * this._moveSpeed);
+        this.setVelocity(0, delta * -this._moveSpeed);
         break;
       case 'down':
         this.anims.play('enemy-up-down', true);
@@ -73,7 +65,7 @@ export class Enemy extends Entity {
         break;
       case 'left':
         this.anims.play('enemy-left', true);
-        this.setVelocity(-delta * this._moveSpeed, 0);
+        this.setVelocity(delta * -this._moveSpeed, 0);
         break;
       case 'right':
         this.anims.play('enemy-right', true);
