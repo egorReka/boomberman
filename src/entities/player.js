@@ -11,7 +11,7 @@ export class Player extends Entity {
     const anims = this.scene.anims;
     const animsFrameReate = 6;
     this.textureKey = texture;
-    this._moveSpeed = 20;
+    this._moveSpeed = 2;
     this.setSize(12, 12);
     this.setOffset(2, 2);
     this.setDepth(1);
@@ -88,7 +88,7 @@ export class Player extends Entity {
   }
 
   createBomb(x, y) { 
-    this.scene.bomb = new Bomb(this.scene, x, y, 'bomb', this.map, this); // TODO: Исправить логику создания бомбы
+    this.scene.bomb = new Bomb(this.scene, x, y, 'bomb', this.map, this); // TODO: Исправить логику создания бомбы, добавить колапс при столкновении с игроком
   }
 
   takeDamage() {

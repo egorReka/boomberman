@@ -3,8 +3,12 @@ import { Player } from '../entities/player';
 
 export class boomberman extends Phaser.Scene {
   player;
-  enemy;
   bomb;
+  valcom;
+  oneal;
+  ovape;
+  dora;
+  dahl;
 
   constructor() { 
     super('boombermanScene');
@@ -14,9 +18,14 @@ export class boomberman extends Phaser.Scene {
     this.load.image('boomberman', 'src/assets/boomberman.png');
     this.load.tilemapTiledJSON('map', 'src/assets/boomberman.json');
     this.load.spritesheet('player', 'src/assets/characters/player1.png', { frameWidth: 16, frameHeight: 16 });
-    this.load.spritesheet('valcom', 'src/assets/characters/enemy/valcom.png', { frameWidth: 16, frameHeight: 16 });  
     this.load.spritesheet('bomb', 'src/assets/characters/bomb.png', { frameWidth: 16, frameHeight: 16 });
     this.load.spritesheet('explosion', 'src/assets/characters/explosion.png', { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('destroy-block', 'src/assets/characters/destroy-block.png', { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('valcom', 'src/assets/characters/enemy/valcom.png', { frameWidth: 16, frameHeight: 16 });  
+    this.load.spritesheet('oneal', 'src/assets/characters/enemy/oneal.png', { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('ovape', 'src/assets/characters/enemy/ovape.png', { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('dora', 'src/assets/characters/enemy/dora.png', { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('dahl', 'src/assets/characters/enemy/dahl.png', { frameWidth: 16, frameHeight: 16 });
   }
 
   create() {
@@ -30,7 +39,11 @@ export class boomberman extends Phaser.Scene {
     const bombLayer = map.createLayer('bomb', tileset, 0, 0);
 
     this.player = new Player(this, 24, 56, 'player', map);
-    this.enemy = new Enemy(this, 440, 55, 'valcom');
+    this.valcom = new Enemy(this, 440, 55, 'valcom');
+    this.oneal = new Enemy(this, 160, 55, 'oneal');
+    this.ovape = new Enemy(this, 152, 200, 'ovape');
+    this.dora = new Enemy(this, 312, 264, 'dora');
+    this.dahl = new Enemy(this, 248, 120, 'dahl');
 
     // слежение по камере за игроком
     this.cameras.main.startFollow(this.player);
@@ -40,34 +53,34 @@ export class boomberman extends Phaser.Scene {
     // границы игрового мира
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    this.player.setCollideWorldBounds(true);
-    this.enemy.setCollideWorldBounds(true);
+    // this.player.setCollideWorldBounds(true); // TODO нужно ли, есть boxesLayer.setCollisionByExclusion([-1]);?
+    // this.enemy.setCollideWorldBounds(true); // TODO...
 
     // коллизия игрока со стенами
     this.physics.add.collider(this.player, [boxesLayer, wallsLayer]);
     // коллизия врага со стенами
-    this.physics.add.collider(this.enemy, [wallsLayer, boxesLayer], this.handleEnemyCollision, null, this);
+    this.physics.add.collider(this.valcom, [wallsLayer, boxesLayer], () => this.valcom.changeDirection(), null, this);
+    this.physics.add.collider(this.oneal, [wallsLayer, boxesLayer], () => this.oneal.changeDirection(), null, this);
+    this.physics.add.collider(this.ovape, [wallsLayer, boxesLayer], () => this.ovape.changeDirection(), null, this);
+    this.physics.add.collider(this.dora, [wallsLayer, boxesLayer], () => this.dora.changeDirection(), null, this);
+    this.physics.add.collider(this.dahl, [wallsLayer, boxesLayer], () => this.dahl.changeDirection(), null, this);
     // столкновение игрока с врагом
-    this.physics.add.overlap(this.enemy, this.player, this.handlePlayerTakeDamage, null, this);    
+    this.physics.add.overlap([this.valcom, this.oneal, this.ovape, this.dora, this.dahl], this.player, this.handlePlayerTakeDamage, null, this);    
     
     boxesLayer.setCollisionByExclusion([-1]);
     wallsLayer.setCollisionByExclusion([-1]);
-  }
-
-  handleEnemyCollision() {
-    this.enemy.changeDirection();
   }
 
   handlePlayerTakeDamage() {    
     this.player.takeDamage();
   }
 
-  handleBoxDestruction(tile) {
-    tile.layer.tilemapLayer.removeTileAt(tile.x, tile.y);
-  }
-
   update(time, delta) {    
     this.player.update(delta);
-    this.enemy.update(delta);
+    this.valcom.update(delta);
+    this.oneal.update(delta);
+    this.ovape.update(delta);
+    this.dora.update(delta);
+    this.dahl.update(delta);
   }
 }

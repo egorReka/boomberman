@@ -66,13 +66,38 @@ export class Bomb extends Entity {
       repeat: 0,
     });
 
+    // Анимация разрушения блока
+    anims.create({
+      key: 'destroy-block',
+      frames: anims.generateFrameNumbers('destroy-block', { start: 1, end: 7 }),
+      frameRate: 8,
+      repeat: 0,
+    });
+
     this.anims.play('tick');
+    this.scene.physics.add.collider(this, [this.scene.valcom, this.scene.oneal, this.scene.ovape, this.scene.dora, this.scene.dahl], (bomb, enemy) => this.handleBombСollision(bomb, enemy), null, this);
   }
 
   explode() {
     this.createExplosion();
     this.scene.bomb = null; 
     this.destroy();
+  }
+
+  handleBoxDestruction(tile) {
+    // Удаляем тайл из boxesLayer
+    this.map.removeTileAt(tile.x, tile.y, true, true, 'boxes');
+
+    // Создаем анимацию разрушения
+    const worldX = this.map.tileToWorldX(tile.x) + this.map.tileWidth / 2;
+    const worldY = this.map.tileToWorldY(tile.y) + this.map.tileHeight / 2;
+    const destruction = this.scene.add.sprite(worldX, worldY, 'destroy-block');
+    destruction.play('destroy-block');
+
+    // Удаляем спрайт разрушения после анимации
+    destruction.on('animationcomplete', () => {
+      destruction.destroy();
+    });
   }
 
   createExplosion() {
@@ -128,16 +153,16 @@ export class Bomb extends Entity {
         );
 
         if (boxTile && boxTile.index !== -1) {
-          this.scene.handleBoxDestruction(boxTile);
+          this.handleBoxDestruction(boxTile);
           break;
         }      
 
         // Создание спрайта для анимации взрыва
         const explosion = this.scene.add.sprite(explosionX, explosionY, 'explosion');
         this.scene.physics.add.existing(explosion);
-        this.scene.physics.add.overlap(explosion, this.scene.player, this.handlePlayerTakeDamage, null, this.scene);
-        this.scene.physics.add.overlap(explosion, this.scene.enemy, this.handleEnemyTakeDamage, null, this.scene);
-
+        this.scene.physics.add.overlap(explosion, this.player, this.handlePlayerTakeDamage, null, this.scene);
+        this.scene.physics.add.overlap(explosion, [this.scene.valcom, this.scene.oneal, this.scene.ovape, this.scene.dora, this.scene.dahl], (explosion, enemy) => this.handleEnemyTakeDamage(explosion, enemy), null, this.scene); // TODO исправить
+        
         // Выбор нужной анимации для взрыва по направлению
         explosion.play(`explode-${direction}`);
 
@@ -152,7 +177,12 @@ export class Bomb extends Entity {
     this.player.takeDamage();
   }
 
-  handleEnemyTakeDamage() {
-    this.enemy.takeDamage();
+  handleEnemyTakeDamage(explosion, enemy) {
+    enemy.takeDamage();
+  }
+
+  handleBombСollision(bomb, enemy) {    
+    enemy.changeDirection();
+    bomb.setVelocity(0, 0); // TODO костыль, нужно убрать
   }
 }

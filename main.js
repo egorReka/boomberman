@@ -4,8 +4,8 @@ import { scenes } from './src/scenes';
 
 new Phaser.Game({
   type: Phaser.AUTO,
-  width: 464,
-  height: 302,
+  width: 360,
+  height: 200,
   title: 'boomberman',
   url: import.meta.env.URL || '',
   version: import.meta.env.VERSION || '0.0.1',
