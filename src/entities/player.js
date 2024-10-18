@@ -68,14 +68,6 @@ export class Player extends Entity {
       frameRate: animsFrameReate,
       repeat: 0,
     });
-
-    this.on('animationcomplete', (animation) => {
-      if (animation.key === 'dead') {
-        this.setData("isDead", true);
-        this.setVelocity(0, 0);
-        this.visible = false;
-      }
-    });
   }
 
   setupKeysListener() {
@@ -104,6 +96,7 @@ export class Player extends Entity {
       this.setData('isDead', true);
       this.anims.play('dead');
       this.setVelocity(0, 0);
+      this.scene.physics.world.disableBody(this.body);
       console.log('Игрок погиб');
     }
   }

@@ -49,6 +49,7 @@ export class Enemy extends Entity {
       this.setData('isDead', true);
       this.anims.play('dead');
       this.setVelocity(0, 0);
+      this.scene.physics.world.disableBody(this.body);
       console.log('Враг погиб');
     }
   }
