@@ -13,29 +13,44 @@ export class Enemy extends Entity {
     this.textureKey = texture;
     this.direction = this.getRandomDirection();
     this._moveSpeed = 1;
-    this.setSize(15, 15);
-    this.setOffset(1, 1);    
+    this.setData('isDead', false);
 
-  this.anims.create({
-    key: 'enemy-up-down',
-    frames: this.anims.generateFrameNumbers('valcom', { start: 0, end: 5 }),
-    frameRate: animsFrameReate,
-    repeat: -1,
-  });
+    this.anims.create({
+      key: 'enemy-up-down',
+      frames: this.anims.generateFrameNumbers('valcom', { start: 0, end: 5 }),
+      frameRate: animsFrameReate,
+      repeat: -1,
+    });
 
-  this.anims.create({
-    key: 'enemy-right',
-    frames: this.anims.generateFrameNumbers('valcom', { start: 0, end: 2 }),
-    frameRate: animsFrameReate,
-    repeat: -1,
-  });
+    this.anims.create({
+      key: 'enemy-right',
+      frames: this.anims.generateFrameNumbers('valcom', { start: 0, end: 2 }),
+      frameRate: animsFrameReate,
+      repeat: -1,
+    });
 
-  this.anims.create({
-    key: 'enemy-left',
-    frames: this.anims.generateFrameNumbers('valcom', { start: 3, end: 5 }),
-    frameRate: animsFrameReate,
-    repeat: -1,
-  });
+    this.anims.create({
+      key: 'enemy-left',
+      frames: this.anims.generateFrameNumbers('valcom', { start: 3, end: 5 }),
+      frameRate: animsFrameReate,
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: 'dead',
+      frames: this.anims.generateFrameNumbers('valcom', { start: 6, end: 11 }),
+      frameRate: animsFrameReate,
+      repeat: 0,
+    });
+  }
+
+  takeDamage() {
+    if (!this.getData('isDead')) {
+      this.setData('isDead', true);
+      this.anims.play('dead');
+      this.setVelocity(0, 0);
+      console.log('Враг погиб');
+    }
   }
 
   getRandomDirection() {
@@ -54,6 +69,10 @@ export class Enemy extends Entity {
   }
 
   update(delta) {
+    if (this.getData('isDead')) {
+      return;
+    }
+
     switch (this.direction) {
       case 'up':
         this.anims.play('enemy-up-down', true);

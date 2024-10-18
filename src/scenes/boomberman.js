@@ -1,6 +1,5 @@
 import { Enemy } from '../entities/enemy';
 import { Player } from '../entities/player';
-import { Bomb } from '../entities/bomb';
 
 export class boomberman extends Phaser.Scene {
   player;
@@ -14,23 +13,10 @@ export class boomberman extends Phaser.Scene {
   preload() {
     this.load.image('boomberman', 'src/assets/boomberman.png');
     this.load.tilemapTiledJSON('map', 'src/assets/boomberman.json');
-    this.load.spritesheet('player', 'src/assets/characters/player1.png',
-      {
-        frameWidth: 16,
-        frameHeight: 16
-      });
-    
-    this.load.spritesheet('valcom', 'src/assets/characters/enemy/valcom.png',
-      {
-        frameWidth: 16,
-        frameHeight: 16
-      });
-    
-    this.load.spritesheet('bomb', 'src/assets/characters/bomb.png',
-      {
-        frameWidth: 16,
-        frameHeight: 16
-      });  
+    this.load.spritesheet('player', 'src/assets/characters/player1.png', { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('valcom', 'src/assets/characters/enemy/valcom.png', { frameWidth: 16, frameHeight: 16 });  
+    this.load.spritesheet('bomb', 'src/assets/characters/bomb.png', { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('explosion', 'src/assets/characters/explosion.png', { frameWidth: 16, frameHeight: 16 });
   }
 
   create() {
@@ -48,48 +34,40 @@ export class boomberman extends Phaser.Scene {
 
     // слежение по камере за игроком
     this.cameras.main.startFollow(this.player);
+    // границы камеры
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
     // границы игрового мира
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
     this.player.setCollideWorldBounds(true);
     this.enemy.setCollideWorldBounds(true);
 
     // коллизия игрока со стенами
-    this.physics.add.collider(this.player, wallsLayer);
-    wallsLayer.setCollisionByExclusion([-1]);
-
-    this.physics.add.collider(this.player, boxesLayer);
-    boxesLayer.setCollisionByExclusion([-1]);
-
+    this.physics.add.collider(this.player, [boxesLayer, wallsLayer]);
     // коллизия врага со стенами
-    this.physics.add.collider(this.enemy, wallsLayer, this.handleEnemyCollision, null, this);
-    wallsLayer.setCollisionByExclusion([-1]);
-
-    this.physics.add.collider(this.enemy, boxesLayer, this.handleEnemyCollision, null, this);
+    this.physics.add.collider(this.enemy, [wallsLayer, boxesLayer], this.handleEnemyCollision, null, this);
+    // столкновение игрока с врагом
+    this.physics.add.overlap(this.enemy, this.player, this.handlePlayerTakeDamage, null, this);    
+    
     boxesLayer.setCollisionByExclusion([-1]);
-
-    this.physics.add.overlap(this.enemy, this.player, this.handlePlayerEnemyCollision, null, this);
+    wallsLayer.setCollisionByExclusion([-1]);
   }
 
   handleEnemyCollision() {
     this.enemy.changeDirection();
   }
 
-  handlePlayerEnemyCollision() {
-    if (!this.player.getData("isDead")) {
-      this.player.setData("isDead", true);
-      this.player.anims.play('dead', true);
-      this.player.setVelocity(0, 0);
-    }
+  handlePlayerTakeDamage() {    
+    this.player.takeDamage();
+  }
+
+  handleBoxDestruction(tile) {
+    tile.layer.tilemapLayer.removeTileAt(tile.x, tile.y);
   }
 
   update(time, delta) {    
     this.player.update(delta);
     this.enemy.update(delta);
-
-    if (this.bomb) {
-      this.bomb.update();
-    }
   }
 }

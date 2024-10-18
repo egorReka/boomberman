@@ -11,7 +11,7 @@ export class Player extends Entity {
     const anims = this.scene.anims;
     const animsFrameReate = 6;
     this.textureKey = texture;
-    this._moveSpeed = 2;
+    this._moveSpeed = 20;
     this.setSize(12, 12);
     this.setOffset(2, 2);
     this.setDepth(1);
@@ -80,7 +80,8 @@ export class Player extends Entity {
 
   setupKeysListener() {
     this.scene.input.keyboard.on('keydown-SPACE', () => {
-      if (!this.scene.bomb) { 
+      
+      if (!this.scene.bomb) {
         // Преобразуем мировые координаты игрока (this.x, this.y) в тайловые
         const tileX = this.map.worldToTileX(this.x);
         const tileY = this.map.worldToTileY(this.y);
@@ -94,9 +95,17 @@ export class Player extends Entity {
     });
   }
 
-  createBomb(x, y) {
-    this.scene.bomb = new Bomb(this.scene, x, y, 'bomb');
-    this.scene.physics.add.existing(this.scene.bomb);
+  createBomb(x, y) { 
+    this.scene.bomb = new Bomb(this.scene, x, y, 'bomb', this.map, this); // TODO: Исправить логику создания бомбы
+  }
+
+  takeDamage() {
+    if (!this.getData('isDead')) {
+      this.setData('isDead', true);
+      this.anims.play('dead');
+      this.setVelocity(0, 0);
+      console.log('Игрок погиб');
+    }
   }
 
   update(delta) {   
@@ -104,7 +113,7 @@ export class Player extends Entity {
       return;
     }
 
-    const keys = this.scene?.input.keyboard.createCursorKeys();
+    const keys = this.scene.input.keyboard.createCursorKeys();
 
     if (keys.up.isDown) {
       this.anims.play('up', true);
