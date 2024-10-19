@@ -1,3 +1,15 @@
+import boombermanImage from '../assets/boomberman.png';
+import mapJSON from '../assets/boomberman.json';
+import playerSprite from '../assets/characters/player1.png';
+import bombSprite from '../assets/characters/bomb.png';
+import explosionSprite from '../assets/characters/explosion.png';
+import destroyBlockSprite from '../assets/characters/destroy-block.png';
+import valcomSprite from '../assets/characters/enemy/valcom.png';
+import onealSprite from '../assets/characters/enemy/oneal.png';
+import ovapeSprite from '../assets/characters/enemy/ovape.png';
+import doraSprite from '../assets/characters/enemy/dora.png';
+import dahlSprite from '../assets/characters/enemy/dahl.png';
+
 import { Enemy } from '../entities/enemy';
 import { Player } from '../entities/player';
 
@@ -15,17 +27,17 @@ export class boomberman extends Phaser.Scene {
   }
   
   preload() {
-    this.load.image('boomberman', 'src/assets/boomberman.png');
-    this.load.tilemapTiledJSON('map', 'src/assets/boomberman.json');
-    this.load.spritesheet('player', 'src/assets/characters/player1.png', { frameWidth: 16, frameHeight: 16 });
-    this.load.spritesheet('bomb', 'src/assets/characters/bomb.png', { frameWidth: 16, frameHeight: 16 });
-    this.load.spritesheet('explosion', 'src/assets/characters/explosion.png', { frameWidth: 16, frameHeight: 16 });
-    this.load.spritesheet('destroy-block', 'src/assets/characters/destroy-block.png', { frameWidth: 16, frameHeight: 16 });
-    this.load.spritesheet('valcom', 'src/assets/characters/enemy/valcom.png', { frameWidth: 16, frameHeight: 16 });  
-    this.load.spritesheet('oneal', 'src/assets/characters/enemy/oneal.png', { frameWidth: 16, frameHeight: 16 });
-    this.load.spritesheet('ovape', 'src/assets/characters/enemy/ovape.png', { frameWidth: 16, frameHeight: 16 });
-    this.load.spritesheet('dora', 'src/assets/characters/enemy/dora.png', { frameWidth: 16, frameHeight: 16 });
-    this.load.spritesheet('dahl', 'src/assets/characters/enemy/dahl.png', { frameWidth: 16, frameHeight: 16 });
+    this.load.image('boomberman', boombermanImage);
+    this.load.tilemapTiledJSON('map', mapJSON);
+    this.load.spritesheet('player', playerSprite, { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('bomb', bombSprite, { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('explosion', explosionSprite, { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('destroy-block', destroyBlockSprite, { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('valcom', valcomSprite, { frameWidth: 16, frameHeight: 16 });  
+    this.load.spritesheet('oneal', onealSprite, { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('ovape', ovapeSprite, { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('dora', doraSprite, { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('dahl', dahlSprite, { frameWidth: 16, frameHeight: 16 });
   }
 
   create() {
